@@ -1,0 +1,304 @@
+<group name="mikrotik,network_device,">
+
+  <!-- BASE RULES FOR DIFFERENT LOG TYPES -->
+
+  <!-- System Events Base Rule -->
+  <rule id="113000" level="0">
+    <decoded_as>mikrotik-system-parent</decoded_as>
+    <description>MikroTik System log messages</description>
+  </rule>
+
+  <!-- OpenVPN Events Base Rule -->
+  <rule id="113100" level="0">
+    <decoded_as>mikrotik-ovpn-parent</decoded_as>
+    <description>MikroTik OpenVPN log messages</description>
+  </rule>
+
+  <!-- L2TP Events Base Rule -->
+  <rule id="113200" level="0">
+    <decoded_as>mikrotik-l2tp-parent</decoded_as>
+    <description>MikroTik L2TP log messages</description>
+  </rule>
+
+  <!-- IPSec Events Base Rule -->
+  <rule id="113300" level="0">
+    <decoded_as>mikrotik-ipsec-parent</decoded_as>
+    <description>MikroTik IPSec log messages</description>
+  </rule>
+
+  <!-- AUTHENTICATION AND ACCESS RULES (113001-113099) -->
+
+  <!-- Login Failure -->
+  <rule id="113001" level="5">
+    <if_sid>113000</if_sid>
+    <match>login failure for user</match>
+    <description>MikroTik: Login failure for user $(dstuser) from $(srcip) via $(method)</description>
+    <group>authentication,authentication_failed,</group>
+  </rule>
+
+  <!-- Critical Login Failure -->
+  <rule id="113002" level="7">
+    <if_sid>113001</if_sid>
+    <match>critical login failure</match>
+    <description>MikroTik: Critical login failure for user $(dstuser) from $(srcip) via $(method)</description>
+    <group>authentication,authentication_failed,critical,</group>
+  </rule>
+
+  <!-- Login Success -->
+  <rule id="113003" level="3">
+    <if_sid>113000</if_sid>
+    <match>logged in from</match>
+    <description>MikroTik: User $(dstuser) logged in from $(srcip) via $(method)</description>
+    <group>authentication,authentication_success,</group>
+  </rule>
+
+  <!-- Logout -->
+  <rule id="113004" level="3">
+    <if_sid>113000</if_sid>
+    <match>logged out from</match>
+    <description>MikroTik: User $(dstuser) logged out from $(srcip) via $(method)</description>
+    <group>authentication,logout,</group>
+  </rule>
+
+  <!-- WinBox Access -->
+  <rule id="113005" level="4">
+    <if_sid>113003</if_sid>
+    <match>via winbox</match>
+    <description>MikroTik: WinBox access - User $(dstuser) from $(srcip)</description>
+    <group>authentication,winbox,</group>
+  </rule>
+
+  <!-- Telnet Access -->
+  <rule id="113006" level="3">
+    <if_sid>113003</if_sid>
+    <match>via telnet</match>
+    <description>MikroTik: Telnet access - User $(dstuser) from $(srcip)</description>
+    <group>authentication,telnet,</group>
+  </rule>
+
+  <!-- Multiple Login Failures -->
+  <rule id="113008" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>113001</if_matched_sid>
+    <same_source_ip />
+    <description>MikroTik: Multiple login failures from $(srcip)</description>
+    <group>authentication,authentication_failures,brute_force,</group>
+  </rule>
+
+  <!-- CONFIGURATION CHANGE RULES (113010-113099) -->
+
+  <!-- Filter Rule Changes -->
+  <rule id="113010" level="6">
+    <if_sid>113000</if_sid>
+    <match>filter rule changed by</match>
+    <description>MikroTik: Firewall filter rule changed by $(dstuser)</description>
+    <group>configuration,firewall,filter,</group>
+  </rule>
+
+  <!-- NAT Rule Changes -->
+  <rule id="113011" level="6">
+    <if_sid>113000</if_sid>
+    <match>nat rule changed by</match>
+    <description>MikroTik: NAT rule changed by $(dstuser)</description>
+    <group>configuration,firewall,nat,</group>
+  </rule>
+
+  <!-- Address List Changes -->
+  <rule id="113013" level="5">
+    <if_sid>113000</if_sid>
+    <match>address list entry changed by</match>
+    <description>MikroTik: Address list entry changed by $(dstuser)</description>
+    <group>configuration,address_list,</group>
+  </rule>
+
+  <!-- Route Changes -->
+  <rule id="113014" level="5">
+    <if_sid>113000</if_sid>
+    <match>route changed by</match>
+    <description>MikroTik: Route changed by $(dstuser)</description>
+    <group>configuration,routing,</group>
+  </rule>
+
+  <!-- Service Port Changes -->
+  <rule id="113016" level="5">
+    <if_sid>113000</if_sid>
+    <match>service port changed by</match>
+    <description>MikroTik: Service port changed by $(dstuser)</description>
+    <group>configuration,service,</group>
+  </rule>
+
+  <!-- Script Changes -->
+  <rule id="113018" level="7">
+    <if_sid>113000</if_sid>
+    <match>script changed by</match>
+    <description>MikroTik: Script changed by $(dstuser)</description>
+    <group>configuration,script,</group>
+  </rule>
+
+  <!-- User Management Changes -->
+  <rule id="113021" level="7">
+    <if_sid>113000</if_sid>
+    <match>user changed by</match>
+    <description>MikroTik: User account changed by $(dstuser)</description>
+    <group>configuration,user_management,</group>
+  </rule>
+
+  <!-- Rapid Configuration Changes -->
+  <rule id="113050" level="8" frequency="10" timeframe="60">
+    <if_matched_sid>113010,113011,113013,113014,113016,113018,113021</if_matched_sid>
+    <same_user />
+    <description>MikroTik: Rapid configuration changes by user $(dstuser)</description>
+    <group>configuration,suspicious_activity,</group>
+  </rule>
+
+  <!-- OPENVPN RULES (113101-113199) -->
+
+  <!-- OpenVPN Initializing -->
+  <rule id="113101" level="3">
+    <if_sid>113100</if_sid>
+    <match>initializing</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) initializing</description>
+    <group>vpn,openvpn,connect,</group>
+  </rule>
+
+  <!-- OpenVPN Connecting -->
+  <rule id="113102" level="3">
+    <if_sid>113100</if_sid>
+    <match>connecting</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) connecting</description>
+    <group>vpn,openvpn,connect,</group>
+  </rule>
+
+  <!-- OpenVPN Connected -->
+  <rule id="113103" level="4">
+    <if_sid>113100</if_sid>
+    <match>connected</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) connected</description>
+    <group>vpn,openvpn,connected,</group>
+  </rule>
+
+  <!-- OpenVPN Terminating -->
+  <rule id="113104" level="5">
+    <if_sid>113100</if_sid>
+    <match>terminating</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) terminated</description>
+    <group>vpn,openvpn,disconnect,</group>
+  </rule>
+
+  <!-- OpenVPN Disconnected -->
+  <rule id="113105" level="4">
+    <if_sid>113100</if_sid>
+    <match>disconnected</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) disconnected</description>
+    <group>vpn,openvpn,disconnect,</group>
+  </rule>
+
+  <!-- OpenVPN Peer Disconnected -->
+  <rule id="113106" level="5">
+    <if_sid>113104</if_sid>
+    <match>peer disconnected</match>
+    <description>MikroTik: OpenVPN tunnel $(tunnel_name) - peer disconnected</description>
+    <group>vpn,openvpn,peer_disconnect,</group>
+  </rule>
+
+  <!-- L2TP RULES (113201-113299) -->
+
+  <!-- L2TP Connected -->
+  <rule id="113201" level="4">
+    <if_sid>113200</if_sid>
+    <match>connected</match>
+    <description>MikroTik: L2TP tunnel $(tunnel_name) connected</description>
+    <group>vpn,l2tp,connected,</group>
+  </rule>
+
+  <!-- L2TP Authenticated -->
+  <rule id="113202" level="4">
+    <if_sid>113200</if_sid>
+    <match>authenticated</match>
+    <description>MikroTik: L2TP tunnel $(tunnel_name) authenticated</description>
+    <group>vpn,l2tp,authenticated,</group>
+  </rule>
+
+  <!-- L2TP Terminating -->
+  <rule id="113203" level="5">
+    <if_sid>113200</if_sid>
+    <match>terminating</match>
+    <description>MikroTik: L2TP tunnel $(tunnel_name) terminated</description>
+    <group>vpn,l2tp,disconnect,</group>
+  </rule>
+
+  <!-- L2TP Authentication Failure -->
+  <rule id="113204" level="7">
+    <if_sid>113203</if_sid>
+    <match>failed to authenticate</match>
+    <description>MikroTik: L2TP tunnel $(tunnel_name) - authentication failure</description>
+    <group>vpn,l2tp,auth_failed,</group>
+  </rule>
+
+  <!-- L2TP Disconnected -->
+  <rule id="113205" level="4">
+    <if_sid>113200</if_sid>
+    <match>disconnected</match>
+    <description>MikroTik: L2TP tunnel $(tunnel_name) disconnected</description>
+    <group>vpn,l2tp,disconnect,</group>
+  </rule>
+
+  <!-- IPSEC RULES (113301-113399) -->
+
+  <!-- IPSec SA Deleted -->
+  <rule id="113301" level="4">
+    <if_sid>113300</if_sid>
+    <match>ISAKMP-SA deleted</match>
+    <description>MikroTik: IPSec SA deleted - $(local_ip)</description>
+    <group>vpn,ipsec,sa_deleted,</group>
+  </rule>
+
+  <!-- IPSec SA Established -->
+  <rule id="113302" level="4">
+    <if_sid>113300</if_sid>
+    <match>ISAKMP-SA established</match>
+    <description>MikroTik: IPSec SA established - $(local_ip)</description>
+    <group>vpn,ipsec,sa_established,</group>
+  </rule>
+
+  <!-- IPSec Phase 1 -->
+  <rule id="113303" level="3">
+    <if_sid>113300</if_sid>
+    <match>initiate new phase 1</match>
+    <description>MikroTik: IPSec Phase 1 initiated</description>
+    <group>vpn,ipsec,phase1,</group>
+  </rule>
+
+  <!-- SECURITY MONITORING RULES (113700-113799) -->
+
+  <!-- Multiple VPN Disconnections -->
+  <rule id="113701" level="8" frequency="5" timeframe="300">
+    <if_matched_sid>113104,113105,113203,113205,113301</if_matched_sid>
+    <description>MikroTik: Multiple VPN disconnections detected</description>
+    <group>vpn,multiple_disconnects,connectivity_issues,</group>
+  </rule>
+
+  <!-- Failed Authentication Pattern -->
+  <rule id="113703" level="9" frequency="5" timeframe="180">
+    <if_matched_sid>113001,113204</if_matched_sid>
+    <same_source_ip />
+    <description>MikroTik: Authentication failure pattern from $(srcip)</description>
+    <group>authentication,attack_pattern,</group>
+  </rule>
+
+  <!-- Administrative Access Pattern -->
+  <rule id="113704" level="6">
+    <if_sid>113005</if_sid>
+    <time>18:00-08:00</time>
+    <description>MikroTik: After-hours WinBox access by $(dstuser) from $(srcip)</description>
+    <group>authentication,after_hours,administrative_access,</group>
+  </rule>
+
+  <!-- Weekend Access -->
+  <rule id="113705" level="5">
+    <if_sid>113003,113005</if_sid>
+    <weekday>saturday,sunday</weekday>
+    <description>MikroTik: Weekend access by $(dstuser) from $(srcip) via $(method)</description>
+    <group>authentication,weekend_access,</group>
+  </rule>
+
+</group>
