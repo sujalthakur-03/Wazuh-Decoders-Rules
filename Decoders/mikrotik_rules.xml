@@ -1,0 +1,97 @@
+<group name="mikrotik,network_device,authentication,">
+
+  <!-- Base rule for MikroTik Router logs -->
+  <rule id="112610" level="0">
+    <decoded_as>mikrotik-parent</decoded_as>
+    <description>MikroTik Router log messages</description>
+  </rule>
+
+  <!-- Login Failure Events -->
+  <rule id="112611" level="5">
+    <if_sid>112610</if_sid>
+    <match>login failure for user</match>
+    <description>MikroTik: Login failure for user $(dstuser) from $(srcip) via $(method)</description>
+    <group>authentication,authentication_failed,</group>
+  </rule>
+
+  <!-- Login Success Events -->
+  <rule id="112612" level="3">
+    <if_sid>112610</if_sid>
+    <match>logged in from</match>
+    <description>MikroTik: User $(dstuser) logged in from $(srcip) via $(method)</description>
+    <group>authentication,authentication_success,</group>
+  </rule>
+
+  <!-- Logout Events -->
+  <rule id="112613" level="3">
+    <if_sid>112610</if_sid>
+    <match>logged out from</match>
+    <description>MikroTik: User $(dstuser) logged out from $(srcip) via $(method)</description>
+    <group>authentication,</group>
+  </rule>
+
+  <!-- Filter Rule Changes -->
+  <rule id="112614" level="6">
+    <if_sid>112610</if_sid>
+    <match>filter rule changed by</match>
+    <description>MikroTik: Firewall filter rule changed by $(dstuser)</description>
+    <group>configuration,firewall,</group>
+  </rule>
+
+  <!-- Address List Changes -->
+  <rule id="112615" level="5">
+    <if_sid>112610</if_sid>
+    <match>address list entry changed by</match>
+    <description>MikroTik: Address list entry changed by $(dstuser)</description>
+    <group>configuration,address_list,</group>
+  </rule>
+
+  <!-- Service Port Changes -->
+  <rule id="112616" level="5">
+    <if_sid>112610</if_sid>
+    <match>service port changed by</match>
+    <description>MikroTik: Service port changed by $(dstuser)</description>
+    <group>configuration,service,</group>
+  </rule>
+
+  <!-- Route Changes -->
+  <rule id="112617" level="5">
+    <if_sid>112610</if_sid>
+    <match>route changed by</match>
+    <description>MikroTik: Route changed by $(dstuser)</description>
+    <group>configuration,routing,</group>
+  </rule>
+
+  <!-- Multiple Login Failures -->
+  <rule id="112618" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>112611</if_matched_sid>
+    <same_source_ip />
+    <description>MikroTik: Multiple login failures from $(srcip)</description>
+    <group>authentication,authentication_failures,</group>
+  </rule>
+
+  <!-- Critical Login Failure -->
+  <rule id="112619" level="7">
+    <if_sid>112611</if_sid>
+    <match>critical login failure</match>
+    <description>MikroTik: Critical login failure for user $(dstuser) from $(srcip)</description>
+    <group>authentication,authentication_failed,critical,</group>
+  </rule>
+
+  <!-- Winbox Login -->
+  <rule id="112620" level="4">
+    <if_sid>112612</if_sid>
+    <match>via winbox</match>
+    <description>MikroTik: User $(dstuser) logged in from $(srcip) via WinBox</description>
+    <group>authentication,winbox,</group>
+  </rule>
+
+  <!-- Rapid Configuration Changes -->
+  <rule id="112621" level="8" frequency="10" timeframe="60">
+    <if_matched_sid>112614,112615,112616,112617</if_matched_sid>
+    <same_user />
+    <description>MikroTik: Rapid configuration changes by user $(dstuser)</description>
+    <group>configuration,suspicious_activity,</group>
+  </rule>
+
+</group>
