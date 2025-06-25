@@ -1,0 +1,89 @@
+<decoder name="hp-router-parent">
+  <prematch>%%\d+</prematch>
+</decoder>
+
+<!-- Authentication Failure Decoder - WORKING -->
+<decoder name="hp-router-auth-failure">
+  <parent>hp-router-parent</parent>
+  <prematch>LS_AUTHEN_FAILURE</prematch>
+  <regex>-UserName=(\w+);</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Shell Login Success Decoder - FIXED -->
+<decoder name="hp-router-login-success">
+  <parent>hp-router-parent</parent>
+  <prematch>SHELL_LOGIN</prematch>
+  <regex>; (\w+) logged in from ([0-9.]+)</regex>
+  <order>dstuser,srcip</order>
+</decoder>
+
+<!-- Shell Login Failure Decoder - FIXED -->
+<decoder name="hp-router-login-failure">
+  <parent>hp-router-parent</parent>
+  <prematch>SHELL_LOGINFAIL</prematch>
+  <regex>user (\w+) failed to log in from ([0-9.]+)</regex>
+  <order>dstuser,srcip</order>
+</decoder>
+
+<!-- Shell Logout Decoder - FIXED -->
+<decoder name="hp-router-logout">
+  <parent>hp-router-parent</parent>
+  <prematch>SHELL_LOGOUT</prematch>
+  <regex>(\w+) logged out from ([0-9.]+)</regex>
+  <order>dstuser,srcip</order>
+</decoder>
+
+<!-- Shell Command Execution Decoder - FIXED -->
+<decoder name="hp-router-command">
+  <parent>hp-router-parent</parent>
+  <prematch>SHELL_CMD</prematch>
+  <regex>-User=(\w+); Command is (\w+)</regex>
+  <order>dstuser,command</order>
+</decoder>
+
+<!-- Authentication Launch Decoder - FIXED -->
+<decoder name="hp-router-auth-launch">
+  <parent>hp-router-parent</parent>
+  <prematch>SC_AAA_LAUNCH</prematch>
+  <regex>-UserName=([^;]+); AAA launched</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Authentication Success Decoder - FIXED -->
+<decoder name="hp-router-auth-success">
+  <parent>hp-router-parent</parent>
+  <prematch>SC_AAA_SUCCESS</prematch>
+  <regex>-UserName=([^;]+); AAA is successful</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Configuration Change Decoder - FIXED -->
+<decoder name="hp-router-config-change">
+  <parent>hp-router-parent</parent>
+  <prematch>CFGMAN_CFGCHANGED</prematch>
+  <regex>-EventIndex=(\d+)</regex>
+  <order>event_index</order>
+</decoder>
+
+<!-- Configuration Save Success Decoder - FIXED -->
+<decoder name="hp-router-config-save">
+  <parent>hp-router-parent</parent>
+  <prematch>CFM_SAVECONFIG_SUCCESSFULLY</prematch>
+</decoder>
+
+<!-- Login Trap Decoder - FIXED -->
+<decoder name="hp-router-login-trap">
+  <parent>hp-router-parent</parent>
+  <prematch>LOGIN\(t\)</prematch>
+  <regex>:(\w+) login from (\w+)</regex>
+  <order>dstuser,terminal</order>
+</decoder>
+
+<!-- Logout Trap Decoder - FIXED -->
+<decoder name="hp-router-logout-trap">
+  <parent>hp-router-parent</parent>
+  <prematch>LOGOUT\(t\)</prematch>
+  <regex>:(\w+) logout from (\w+)</regex>
+  <order>dstuser,terminal</order>
+</decoder>
