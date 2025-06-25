@@ -1,0 +1,82 @@
+<!-- Cisco Router Decoders for Wazuh -->
+<!-- File: /var/ossec/etc/decoders/local_cisco_decoders.xml -->
+
+<!-- Base Cisco Router Decoder -->
+<decoder name="cisco-router">
+  <prematch>syslog: SYSLOG</prematch>
+</decoder>
+
+<!-- Cisco Source IP Decoder -->
+<decoder name="cisco-srcip">
+  <parent>cisco-router</parent>
+  <regex>(\d+\.\d+\.\d+\.\d+)\.\d+ > </regex>
+  <order>srcip</order>
+</decoder>
+
+<!-- Cisco Sequence Number Decoder -->
+<decoder name="cisco-sequence">
+  <parent>cisco-router</parent>
+  <regex>Msg: (\d+):</regex>
+  <order>sequence_number</order>
+</decoder>
+
+<!-- Cisco Module Decoder -->
+<decoder name="cisco-module">
+  <parent>cisco-router</parent>
+  <regex>%(\w+)-\d+-\w+:</regex>
+  <order>module</order>
+</decoder>
+
+<!-- Cisco Severity Decoder -->
+<decoder name="cisco-severity">
+  <parent>cisco-router</parent>
+  <regex>%\w+-(\d+)-\w+:</regex>
+  <order>severity_level</order>
+</decoder>
+
+<!-- Cisco Message Type Decoder -->
+<decoder name="cisco-msgtype">
+  <parent>cisco-router</parent>
+  <regex>%\w+-\d+-(\w+):</regex>
+  <order>message_type</order>
+</decoder>
+
+<!-- Interface State Change Decoder -->
+<decoder name="cisco-interface">
+  <parent>cisco-router</parent>
+  <prematch>Interface</prematch>
+  <regex>Interface (\w+), changed state to (\w+)</regex>
+  <order>interface,state</order>
+</decoder>
+
+<!-- Interface Admin Down Decoder -->
+<decoder name="cisco-interface-admin">
+  <parent>cisco-router</parent>
+  <prematch>administratively down</prematch>
+  <regex>Interface (\w+), changed state to administratively down</regex>
+  <order>interface</order>
+</decoder>
+
+<!-- Configuration Change Decoder -->
+<decoder name="cisco-config">
+  <parent>cisco-router</parent>
+  <prematch>Configured from</prematch>
+  <regex>Configured from (\w+) by (\w+) \((\d+\.\d+\.\d+\.\d+)\)</regex>
+  <order>config_source,config_method,config_srcip</order>
+</decoder>
+
+<!-- ID Manager Error Decoder -->
+<decoder name="cisco-idmgr">
+  <parent>cisco-router</parent>
+  <prematch>bad id in id_get</prematch>
+  <regex>bad id in (\w+)</regex>
+  <order>function_name</order>
+</decoder>
+
+<!-- Traceback Decoder -->
+<decoder name="cisco-traceback">
+  <parent>cisco-router</parent>
+  <prematch>Traceback=</prematch>
+  <regex>Traceback= (\w+)</regex>
+  <order>traceback_start</order>
+</decoder>
