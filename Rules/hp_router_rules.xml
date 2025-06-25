@@ -1,0 +1,193 @@
+<group name="hp_router,network_device,authentication,">
+
+  <!-- Base rule for HP Router logs -->
+  <rule id="111610" level="0">
+    <decoded_as>hp-router-parent</decoded_as>
+    <description>HP Router log messages</description>
+  </rule>
+
+  <!-- Authentication Launch Events -->
+  <rule id="111611" level="3">
+    <if_sid>111610</if_sid>
+    <match>SC_AAA_LAUNCH</match>
+    <description>HP Router: AAA authentication launched for user $(dstuser)</description>
+    <group>authentication,</group>
+  </rule>
+
+  <!-- Authentication Success Events -->
+  <rule id="111612" level="3">
+    <if_sid>111610</if_sid>
+    <match>SC_AAA_SUCCESS</match>
+    <description>HP Router: AAA authentication successful for user $(dstuser)</description>
+    <group>authentication,authentication_success,</group>
+  </rule>
+
+  <!-- Authentication Failure Events -->
+  <rule id="111613" level="5">
+    <if_sid>111610</if_sid>
+    <match>LS_AUTHEN_FAILURE</match>
+    <description>HP Router: Authentication failed for user $(dstuser)</description>
+    <group>authentication,authentication_failed,</group>
+  </rule>
+
+  <!-- Multiple Authentication Failures -->
+  <rule id="111614" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>111613</if_matched_sid>
+    <same_source_ip />
+    <description>HP Router: Multiple authentication failures from $(srcip)</description>
+    <group>authentication,authentication_failures,</group>
+  </rule>
+
+  <!-- Login Success Events -->
+  <rule id="111615" level="3">
+    <if_sid>111610</if_sid>
+    <match>SHELL_LOGIN</match>
+    <description>HP Router: User $(dstuser) successfully logged in from $(srcip)</description>
+    <group>authentication,authentication_success,</group>
+  </rule>
+
+  <!-- Login Failure Events -->
+  <rule id="111616" level="5">
+    <if_sid>111610</if_sid>
+    <match>SHELL_LOGINFAIL</match>
+    <description>HP Router: Login failed for user $(dstuser) from $(srcip)</description>
+    <group>authentication,authentication_failed,</group>
+  </rule>
+
+  <!-- Multiple Login Failures -->
+  <rule id="111617" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>111616</if_matched_sid>
+    <same_source_ip />
+    <description>HP Router: Multiple login failures from $(srcip)</description>
+    <group>authentication,authentication_failures,</group>
+  </rule>
+
+  <!-- Logout Events -->
+  <rule id="111618" level="3">
+    <if_sid>111610</if_sid>
+    <match>SHELL_LOGOUT</match>
+    <description>HP Router: User $(dstuser) logged out from $(srcip)</description>
+    <group>authentication,</group>
+  </rule>
+
+  <!-- Command Execution Events -->
+  <rule id="111619" level="2">
+    <if_sid>111610</if_sid>
+    <match>SHELL_CMD</match>
+    <description>HP Router: User $(dstuser) executed command: $(command)</description>
+    <group>command,</group>
+  </rule>
+
+  <!-- Critical Commands -->
+  <rule id="111620" level="8">
+    <if_sid>111619</if_sid>
+    <match>Command is shutdown</match>
+    <description>HP Router: User $(dstuser) executed critical command: $(command)</description>
+    <group>command,critical_command,</group>
+  </rule>
+
+  <!-- Configuration Commands -->
+  <rule id="111621" level="5">
+    <if_sid>111619</if_sid>
+    <match>Command is interface</match>
+    <description>HP Router: User $(dstuser) executed configuration command: $(command)</description>
+    <group>command,configuration,</group>
+  </rule>
+
+  <!-- Show Commands (Information Gathering) -->
+  <rule id="111622" level="2">
+    <if_sid>111619</if_sid>
+    <match>Command is dis</match>
+    <description>HP Router: User $(dstuser) executed information command: $(command)</description>
+    <group>command,information,</group>
+  </rule>
+
+  <!-- System Commands -->
+  <rule id="111623" level="4">
+    <if_sid>111619</if_sid>
+    <match>Command is sys</match>
+    <description>HP Router: User $(dstuser) entered system configuration mode</description>
+    <group>command,system,</group>
+  </rule>
+
+  <!-- Save Configuration -->
+  <rule id="111624" level="4">
+    <if_sid>111619</if_sid>
+    <match>Command is save</match>
+    <description>HP Router: User $(dstuser) saved configuration</description>
+    <group>command,configuration,save,</group>
+  </rule>
+
+  <!-- Quit Command -->
+  <rule id="111625" level="2">
+    <if_sid>111619</if_sid>
+    <match>Command is quit</match>
+    <description>HP Router: User $(dstuser) executed quit command</description>
+    <group>command,logout,</group>
+  </rule>
+
+  <!-- Configuration Change Events -->
+  <rule id="111626" level="6">
+    <if_sid>111610</if_sid>
+    <match>CFGMAN_CFGCHANGED</match>
+    <description>HP Router: Configuration changed (EventIndex: $(event_index))</description>
+    <group>configuration,configuration_changed,</group>
+  </rule>
+
+  <!-- Configuration Save Success -->
+  <rule id="111627" level="4">
+    <if_sid>111610</if_sid>
+    <match>CFM_SAVECONFIG_SUCCESSFULLY</match>
+    <description>HP Router: Configuration saved successfully</description>
+    <group>configuration,configuration_saved,</group>
+  </rule>
+
+  <!-- Login Trap Events -->
+  <rule id="111628" level="3">
+    <if_sid>111610</if_sid>
+    <match>LOGIN\(t\)</match>
+    <description>HP Router: SNMP trap - User $(dstuser) login from $(terminal)</description>
+    <group>authentication,snmp_trap,</group>
+  </rule>
+
+  <!-- Logout Trap Events -->
+  <rule id="111629" level="3">
+    <if_sid>111610</if_sid>
+    <match>LOGOUT\(t\)</match>
+    <description>HP Router: SNMP trap - User $(dstuser) logout from $(terminal)</description>
+    <group>authentication,snmp_trap,</group>
+  </rule>
+
+  <!-- User Not Found -->
+  <rule id="111631" level="7">
+    <if_sid>111613</if_sid>
+    <match>User not found</match>
+    <description>HP Router: Authentication failed - User $(dstuser) not found</description>
+    <group>authentication,authentication_failed,user_not_found,</group>
+  </rule>
+
+  <!-- Suspicious Username Pattern -->
+  <rule id="111632" level="7">
+    <if_sid>111613,111616</if_sid>
+    <match>dlasjlkjdf</match>
+    <description>HP Router: Suspicious username pattern detected: $(dstuser)</description>
+    <group>authentication,suspicious_activity,</group>
+  </rule>
+
+  <!-- Admin User Login -->
+  <rule id="111637" level="4">
+    <if_sid>111615</if_sid>
+    <match>admin logged in from</match>
+    <description>HP Router: Admin user login - $(dstuser) from $(srcip)</description>
+    <group>admin_activity,authentication,</group>
+  </rule>
+
+  <!-- Admin User Commands -->
+  <rule id="111638" level="3">
+    <if_sid>111619</if_sid>
+    <match>-User=admin; Command is</match>
+    <description>HP Router: Admin user command - $(dstuser) executed: $(command)</description>
+    <group>admin_activity,command,</group>
+  </rule>
+
+</group>
