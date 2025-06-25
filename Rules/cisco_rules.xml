@@ -1,0 +1,255 @@
+<!-- Cisco Router Rules for Wazuh -->
+<!-- File: /var/ossec/etc/rules/local_cisco_rules.xml -->
+
+<group name="cisco,router,syslog,">
+
+  <!-- Base Cisco Router Rule -->
+  <rule id="112110" level="0">
+    <decoded_as>cisco-router</decoded_as>
+    <description>Cisco router syslog message</description>
+  </rule>
+
+  <!-- Interface Down Events -->
+  <rule id="112111" level="5">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-interface</decoded_as>
+    <field name="state">down</field>
+    <description>Cisco router interface $(interface) went down</description>
+    <group>cisco,interface,down,network,</group>
+  </rule>
+
+  <!-- Interface Up Events -->
+  <rule id="112112" level="2">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-interface</decoded_as>
+    <field name="state">up</field>
+    <description>Cisco router interface $(interface) came up</description>
+    <group>cisco,interface,up,network,</group>
+  </rule>
+
+  <!-- Interface Administratively Down -->
+  <rule id="112113" level="4">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-interface-admin</decoded_as>
+    <description>Cisco router interface $(interface) administratively shut down</description>
+    <group>cisco,interface,admin_down,network,</group>
+  </rule>
+
+  <!-- Configuration Changes -->
+  <rule id="112114" level="6">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-config</decoded_as>
+    <description>Cisco router configured from $(config_source) by $(config_method) from IP $(config_srcip)</description>
+    <group>cisco,configuration,change,</group>
+  </rule>
+
+  <!-- Console Configuration -->
+  <rule id="112115" level="5">
+    <if_sid>112114</if_sid>
+    <field name="config_source">console</field>
+    <description>Cisco router configured from console by $(config_method) from IP $(config_srcip)</description>
+    <group>cisco,configuration,console,</group>
+  </rule>
+
+  <!-- VTY Remote Configuration -->
+  <rule id="112116" level="7">
+    <if_sid>112114</if_sid>
+    <field name="config_method">vty</field>
+    <description>Cisco router configured via VTY from IP $(config_srcip)</description>
+    <group>cisco,configuration,remote,vty,</group>
+  </rule>
+
+  <!-- ID Manager Errors -->
+  <rule id="112117" level="8">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-idmgr</decoded_as>
+    <description>Cisco router ID manager error in function $(function_name)</description>
+    <group>cisco,error,idmgr,resource,</group>
+  </rule>
+
+  <!-- System Traceback Events -->
+  <rule id="112118" level="9">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-traceback</decoded_as>
+    <description>Cisco router system traceback detected</description>
+    <group>cisco,error,traceback,critical,</group>
+  </rule>
+
+  <!-- Severity Level 3 (Error) -->
+  <rule id="112119" level="8">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">3</field>
+    <description>Cisco router error message (severity 3)</description>
+    <group>cisco,error,severity3,</group>
+  </rule>
+
+  <!-- Severity Level 5 (Notice) -->
+  <rule id="112120" level="3">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">5</field>
+    <description>Cisco router notice message (severity 5)</description>
+    <group>cisco,notice,severity5,</group>
+  </rule>
+
+  <!-- Severity Level 4 (Warning) -->
+  <rule id="112121" level="6">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">4</field>
+    <description>Cisco router warning message (severity 4)</description>
+    <group>cisco,warning,severity4,</group>
+  </rule>
+
+  <!-- Severity Level 2 (Critical) -->
+  <rule id="112122" level="10">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">2</field>
+    <description>Cisco router critical message (severity 2)</description>
+    <group>cisco,critical,severity2,</group>
+  </rule>
+
+  <!-- Severity Level 1 (Alert) -->
+  <rule id="112123" level="12">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">1</field>
+    <description>Cisco router alert message (severity 1)</description>
+    <group>cisco,alert,severity1,</group>
+  </rule>
+
+  <!-- Severity Level 0 (Emergency) -->
+  <rule id="112124" level="15">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-severity</decoded_as>
+    <field name="severity_level">0</field>
+    <description>Cisco router emergency message (severity 0)</description>
+    <group>cisco,emergency,severity0,</group>
+  </rule>
+
+  <!-- LINK Module Events -->
+  <rule id="112125" level="4">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-module</decoded_as>
+    <field name="module">LINK</field>
+    <description>Cisco router LINK module event</description>
+    <group>cisco,link,module,</group>
+  </rule>
+
+  <!-- SYS Module Events -->
+  <rule id="112126" level="4">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-module</decoded_as>
+    <field name="module">SYS</field>
+    <description>Cisco router SYS module event</description>
+    <group>cisco,system,module,</group>
+  </rule>
+
+  <!-- IDMGR Module Events -->
+  <rule id="112127" level="7">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-module</decoded_as>
+    <field name="module">IDMGR</field>
+    <description>Cisco router IDMGR module event</description>
+    <group>cisco,idmgr,module,</group>
+  </rule>
+
+  <!-- UPDOWN Message Type -->
+  <rule id="112128" level="5">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-msgtype</decoded_as>
+    <field name="message_type">UPDOWN</field>
+    <description>Cisco router interface state change event</description>
+    <group>cisco,updown,interface,</group>
+  </rule>
+
+  <!-- CONFIG_I Message Type -->
+  <rule id="112129" level="6">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-msgtype</decoded_as>
+    <field name="message_type">CONFIG_I</field>
+    <description>Cisco router configuration information event</description>
+    <group>cisco,config_info,</group>
+  </rule>
+
+  <!-- INVALID_ID Message Type -->
+  <rule id="112130" level="8">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-msgtype</decoded_as>
+    <field name="message_type">INVALID_ID</field>
+    <description>Cisco router invalid ID error</description>
+    <group>cisco,invalid_id,error,</group>
+  </rule>
+
+  <!-- CHANGED Message Type -->
+  <rule id="112131" level="4">
+    <if_sid>112110</if_sid>
+    <decoded_as>cisco-msgtype</decoded_as>
+    <field name="message_type">CHANGED</field>
+    <description>Cisco router interface changed event</description>
+    <group>cisco,changed,interface,</group>
+  </rule>
+
+  <!-- External IP Configuration -->
+  <rule id="112132" level="8">
+    <if_sid>112116</if_sid>
+    <description>Cisco router configured via VTY from remote IP</description>
+    <group>cisco,configuration,remote,security,</group>
+  </rule>
+
+  <!-- Off-hours Configuration -->
+  <rule id="112133" level="7">
+    <if_sid>112114</if_sid>
+    <time>18:00-06:00</time>
+    <description>Cisco router configured during off-hours from $(config_srcip)</description>
+    <group>cisco,configuration,off_hours,security,</group>
+  </rule>
+
+  <!-- Multiple Interface Down Events (Flapping) -->
+  <rule id="112134" level="8" frequency="3" timeframe="300">
+    <if_matched_sid>112111</if_matched_sid>
+    <description>Cisco router interface flapping - multiple down events</description>
+    <group>cisco,interface,flapping,network,anomaly,</group>
+  </rule>
+
+  <!-- Multiple Configuration Changes -->
+  <rule id="112135" level="7" frequency="3" timeframe="300">
+    <if_matched_sid>112114</if_matched_sid>
+    <description>Multiple configuration changes detected</description>
+    <group>cisco,configuration,multiple,suspicious,</group>
+  </rule>
+
+  <!-- Multiple ID Manager Errors -->
+  <rule id="112136" level="10" frequency="3" timeframe="300">
+    <if_matched_sid>112117</if_matched_sid>
+    <same_source_ip />
+    <description>Multiple ID manager errors from Cisco router - possible resource exhaustion</description>
+    <group>cisco,idmgr,multiple,resource,critical,</group>
+  </rule>
+
+  <!-- Multiple Traceback Events -->
+  <rule id="112137" level="12" frequency="2" timeframe="300">
+    <if_matched_sid>112118</if_matched_sid>
+    <same_source_ip />
+    <description>Multiple system tracebacks from Cisco router - critical system instability</description>
+    <group>cisco,traceback,multiple,critical,system,</group>
+  </rule>
+
+  <!-- High Sequence Number (Potential Log Flooding) -->
+  <rule id="112138" level="6" frequency="100" timeframe="600">
+    <if_matched_sid>112110</if_matched_sid>
+    <same_source_ip />
+    <description>High volume of syslog messages from Cisco router</description>
+    <group>cisco,high_volume,flooding,</group>
+  </rule>
+
+  <!-- Critical Error Combination (ID Manager + Traceback) -->
+  <rule id="112139" level="13">
+    <if_sid>112117,112118</if_sid>
+    <description>Cisco router ID manager error with system traceback - critical system failure</description>
+    <group>cisco,critical,idmgr,traceback,system_failure,</group>
+  </rule>
+
+</group>
