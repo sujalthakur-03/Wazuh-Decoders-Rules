@@ -1,0 +1,59 @@
+<decoder name="mikrotik-parent">
+  <prematch>system,</prematch>
+</decoder>
+
+<!-- Login Failure Decoder - WORKING -->
+<decoder name="mikrotik-login-failure">
+  <parent>mikrotik-parent</parent>
+  <prematch>login failure for user</prematch>
+  <regex>user (\w+) from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- User Login Decoder - WORKING -->
+<decoder name="mikrotik-login-success">
+  <parent>mikrotik-parent</parent>
+  <prematch>user.*logged in from</prematch>
+  <regex>user (\w+) logged in from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- User Logout Decoder - WORKING -->
+<decoder name="mikrotik-logout">
+  <parent>mikrotik-parent</parent>
+  <prematch>user.*logged out from</prematch>
+  <regex>user (\w+) logged out from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- Filter Rule Changed Decoder - WORKING -->
+<decoder name="mikrotik-filter-rule">
+  <parent>mikrotik-parent</parent>
+  <prematch>filter rule changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Address List Changed Decoder - WORKING -->
+<decoder name="mikrotik-address-list">
+  <parent>mikrotik-parent</parent>
+  <prematch>address list entry changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Service Port Changed Decoder - WORKING -->
+<decoder name="mikrotik-service-port">
+  <parent>mikrotik-parent</parent>
+  <prematch>service port changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- Route Changed Decoder - WORKING -->
+<decoder name="mikrotik-route-changed">
+  <parent>mikrotik-parent</parent>
+  <prematch>route changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
