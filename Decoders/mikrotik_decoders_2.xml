@@ -1,0 +1,178 @@
+<!-- SYSTEM LOGS PARENT DECODER -->
+<decoder name="mikrotik-system-parent">
+  <prematch>system,</prematch>
+</decoder>
+
+<!-- Authentication and Account Decoders - FIXED for actual format -->
+<decoder name="mikrotik-login-failure">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>login failure for user</prematch>
+  <regex>user (\w+) from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- FIXED: Login Success - matches "account user" format -->
+<decoder name="mikrotik-login-success">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>account user.*logged in from</prematch>
+  <regex>account user (\w+) logged in from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- FIXED: Logout - matches "account user" format -->
+<decoder name="mikrotik-logout">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>account user.*logged out from</prematch>
+  <regex>account user (\w+) logged out from ([0-9.]+) via (\w+)</regex>
+  <order>dstuser,srcip,method</order>
+</decoder>
+
+<!-- Configuration Change Decoders -->
+<decoder name="mikrotik-filter-rule">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>filter rule changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-address-list">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>address list entry changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-service-port">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>service port changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-route-changed">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>route changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-nat-rule">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>nat rule changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-script-changed">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>script changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<decoder name="mikrotik-user-changed">
+  <parent>mikrotik-system-parent</parent>
+  <prematch>user changed by</prematch>
+  <regex>changed by (\w+)</regex>
+  <order>dstuser</order>
+</decoder>
+
+<!-- OPENVPN LOGS PARENT DECODER -->
+<decoder name="mikrotik-ovpn-parent">
+  <prematch>ovpn,info</prematch>
+</decoder>
+
+<decoder name="mikrotik-ovpn-initializing">
+  <parent>mikrotik-ovpn-parent</parent>
+  <prematch>initializing</prematch>
+  <regex>ovpn,info ([^:]+): initializing</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-ovpn-connecting">
+  <parent>mikrotik-ovpn-parent</parent>
+  <prematch>connecting</prematch>
+  <regex>ovpn,info ([^:]+): connecting</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-ovpn-connected">
+  <parent>mikrotik-ovpn-parent</parent>
+  <prematch>connected</prematch>
+  <regex>ovpn,info ([^:]+): connected</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-ovpn-terminating">
+  <parent>mikrotik-ovpn-parent</parent>
+  <prematch>terminating</prematch>
+  <regex>ovpn,info ([^:]+): terminating</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-ovpn-disconnected">
+  <parent>mikrotik-ovpn-parent</parent>
+  <prematch>disconnected</prematch>
+  <regex>ovpn,info ([^:]+): disconnected</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<!-- L2TP LOGS PARENT DECODER -->
+<decoder name="mikrotik-l2tp-parent">
+  <prematch>l2tp,ppp,info</prematch>
+</decoder>
+
+<decoder name="mikrotik-l2tp-connected">
+  <parent>mikrotik-l2tp-parent</parent>
+  <prematch>connected</prematch>
+  <regex>l2tp,ppp,info ([^:]+): connected</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-l2tp-authenticated">
+  <parent>mikrotik-l2tp-parent</parent>
+  <prematch>authenticated</prematch>
+  <regex>l2tp,ppp,info ([^:]+): authenticated</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-l2tp-terminating">
+  <parent>mikrotik-l2tp-parent</parent>
+  <prematch>terminating</prematch>
+  <regex>l2tp,ppp,info ([^:]+): terminating</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<decoder name="mikrotik-l2tp-disconnected">
+  <parent>mikrotik-l2tp-parent</parent>
+  <prematch>disconnected</prematch>
+  <regex>l2tp,ppp,info ([^:]+): disconnected</regex>
+  <order>tunnel_name</order>
+</decoder>
+
+<!-- IPSEC LOGS PARENT DECODER -->
+<decoder name="mikrotik-ipsec-parent">
+  <prematch>ipsec,info</prematch>
+</decoder>
+
+<!-- IPSec SA Deleted - Simple version -->
+<decoder name="mikrotik-ipsec-sa-deleted">
+  <parent>mikrotik-ipsec-parent</parent>
+  <prematch>ISAKMP-SA deleted</prematch>
+  <regex>ISAKMP-SA deleted ([0-9.]+)</regex>
+  <order>local_ip</order>
+</decoder>
+
+<!-- IPSec SA Established - Simple version -->
+<decoder name="mikrotik-ipsec-sa-established">
+  <parent>mikrotik-ipsec-parent</parent>
+  <prematch>ISAKMP-SA established</prematch>
+  <regex>ISAKMP-SA established ([0-9.]+)</regex>
+  <order>local_ip</order>
+</decoder>
+
+<!-- IPSec Phase 1 - FIXED (no regex, no order tag) -->
+<decoder name="mikrotik-ipsec-phase1">
+  <parent>mikrotik-ipsec-parent</parent>
+  <prematch>initiate new phase 1</prematch>
+</decoder>
